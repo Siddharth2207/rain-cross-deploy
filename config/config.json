@@ -1,0 +1,58 @@
+{
+    "contracts": {
+      "mumbai": {
+        "interpreter": {
+          "address": "0x24035b15e908551a2e1b4f435384d9485766d296",
+          "transaction": "0x25803cfab9d29748bd2aba1674e4b11af0f1078cf7076a835648ad0aec1d552f"
+        },
+        "store": {
+          "address": "0xd28543743f017045c9448ec6d82f5568a0f26918",
+          "transaction": "0x57be454232d43cb23c1483871a106c9467384bf9940c1a221fe0674223069af0"
+        },
+        "expressionDeployer": {
+          "address": "0x32ba42606ca2a2b91f28ebb0472a683b346e7cc7",
+          "transaction": "0x4195ac48df08dbe498d3995015941600f41e9153a777aa94b2107133ac9364e6"
+        },
+        "orderbook": {
+          "address": "0xacf6069f4a6a9c66db8b9a087592278bbccde5c3",
+          "transaction": "0x46326e77b3ab54166315ae44e4dc46af62a612709b41e2983a2dc06828fefc82"
+        }
+      },
+      "polygon": {
+        "interpreter": {
+          "address": "0xc318bd7dbdac1ce35aa4aa1443b41c53246c60e2",
+          "transaction": "0xde3b11be0372dc8072e3192394444ee152c9d24b467f91cb22064686370541eb"
+        },
+        "store": {
+          "address": "0x23ce89cd30082cb899005e8779f639ecb4cfc467",
+          "transaction": "0x116d53acc683544b3ea97a93841aab8c3b548488e2e32ae5e6bf7a35be396249"
+        },
+        "expressionDeployer": {
+          "address": "0x410429dc602fbc4c58aeef345a8bb0e7d18d1cdb",
+          "transaction": "0x94cd4b8f0df831238683098855ee308fcdbd54fcf63db7080bc341233c8b0b74"
+        },
+        "orderbook": {
+          "address": "0x2de560ed9ba8a6cdfe92e26862ecb86e6e2d9705",
+          "transaction": "0xcdde118a25c099cf07df9dfb55c9dee527f539802f3a1ee1d301c8a5b6fc3951"
+        }
+      } ,
+      "ethereum" : {
+        "interpreter": {
+            "address": "0xebea638926f7ba49c0a1808e0ff3b6d78789b153",
+            "transaction": "0xf86a91adda8e13826445b4c1b986ce76997fc5befba31469b8aff447ce406648"
+          },
+          "store": {
+            "address": "0xb92fd23b5a9cbe5047257a0300d161d449296c03",
+            "transaction": "0x371afdb9e6554620b41acce089d7dc659677ec264f6cb25712454bb23d230ff4"
+          },
+          "expressionDeployer": {
+            "address": "0x34a81e8bc3e2420efc8ae84d35045c0326b00bdc",
+            "transaction": "0xefc51012df9020d88773f3e615e94f32d15cc48356c38aa3b4b4690b15a4768b"
+          },
+          "orderbook": {
+            "address": "0xce0a4f3e60178668c89f86d918a0585ca80e0f6d",
+            "transaction": "0xc0a2a7446ef4f7ef2331d70b8c72043798dbf26a77a7d24e2f9c68acdd433817"
+          }
+      }
+  } 
+}
