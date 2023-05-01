@@ -3,11 +3,12 @@ export enum RainContracts{
     Rainterpreter = 'interpreter',
     RainterpreterStore = 'store',
     RainterpreterExpressionDeployer = 'expressionDeployer',
-    OrderBook = 'orderbook'
+    OrderBook = 'orderbook' ,
+    ZeroEx = 'zeroexorderbookimplmentation'
 }  
 
 export enum RainNetworks{
-    Mumbai = 'mumbai',
+    Mumbai = 'mumbai' ,
     Polygon = 'polygon',
     Ethereum = 'ethereum'
 } 

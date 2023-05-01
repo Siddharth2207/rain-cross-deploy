@@ -40,18 +40,30 @@ export const getTransactionData = async (
     }
     return txData 
       
-}  
+}   
+
+export const getChainId = (network : RainNetworks) => { 
+
+  if(network == RainNetworks.Mumbai){
+    return ChainId.PolygonMumbai
+  }else if(network == RainNetworks.Polygon){
+    return ChainId.Polygon
+  }else if(network == RainNetworks.Ethereum){
+    return ChainId.Mainnet
+  }
+
+}
 
 
 
 export const getTransactionDataForZeroEx = (
   txData:string,
-  fromNetwork:ChainId,
-  toNetwork:ChainId
+  fromNetwork:RainNetworks,
+  toNetwork:RainNetworks
 ) => { 
 
-  const { exchangeProxy: fromNetworkProxy } = getContractAddressesForChainOrThrow(fromNetwork);
-  const { exchangeProxy: toNetworkProxy } = getContractAddressesForChainOrThrow(toNetwork);  
+  const { exchangeProxy: fromNetworkProxy } = getContractAddressesForChainOrThrow(getChainId(fromNetwork));
+  const { exchangeProxy: toNetworkProxy } = getContractAddressesForChainOrThrow(getChainId(toNetwork));  
 
   
   txData = txData.toLocaleLowerCase()

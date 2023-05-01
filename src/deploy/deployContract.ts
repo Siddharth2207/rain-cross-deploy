@@ -25,11 +25,11 @@ export const getContractDeployTxData = async (
 } 
 
 export const deployArbImplementation = async (
-    fromNetwork: ChainId,
-    toNetwork: ChainId, 
+    fromNetwork: RainNetworks,
+    toNetwork: RainNetworks, 
 ) => { 
-
-    const txHash  = contractConfig.contracts[fromNetwork]["zeroexorderbookimplmentation"].transaction 
+    
+    const txHash  = contractConfig.contracts[fromNetwork][RainContracts.ZeroEx].transaction 
 
     // Get transaction data for origin network
     const txDataOriginNetwork = await getTransactionData(mumbaiProvider, txHash)   
