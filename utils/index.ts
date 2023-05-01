@@ -10,6 +10,7 @@ export enum RainNetworks{
     Mumbai = 'mumbai',
     Polygon = 'polygon',
     Ethereum = 'ethereum'
-}
+} 
+
 
 export * from "./Transaction/transaction";

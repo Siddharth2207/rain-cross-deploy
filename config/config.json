@@ -16,6 +16,10 @@
         "orderbook": {
           "address": "0xacf6069f4a6a9c66db8b9a087592278bbccde5c3",
           "transaction": "0x46326e77b3ab54166315ae44e4dc46af62a612709b41e2983a2dc06828fefc82"
+        },
+        "zeroexorderbookimplmentation": {
+          "address": "0x1797979e36cba670e7c2a9db790a3fc1a9770361",
+          "transaction": "0x1d4c7cd640249cb59289d393bd43c0c8095d0d854e8abea8d85aa4e642546792"
         }
       },
       "polygon": {

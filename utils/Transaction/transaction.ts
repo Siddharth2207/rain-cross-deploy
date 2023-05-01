@@ -1,3 +1,4 @@
+import { ChainId, getContractAddressesForChainOrThrow } from "@0x/contract-addresses"
 import {ethers} from "ethers"  
 import { RainNetworks } from ".."
 import contractConfig from "../../config/config.json"
@@ -39,4 +40,29 @@ export const getTransactionData = async (
     }
     return txData 
       
-} 
+}  
+
+
+
+export const getTransactionDataForZeroEx = (
+  txData:string,
+  fromNetwork:ChainId,
+  toNetwork:ChainId
+) => { 
+
+  const { exchangeProxy: fromNetworkProxy } = getContractAddressesForChainOrThrow(fromNetwork);
+  const { exchangeProxy: toNetworkProxy } = getContractAddressesForChainOrThrow(toNetwork);  
+
+  
+  txData = txData.toLocaleLowerCase()
+  const fromContractConfig = contractConfig.contracts[fromNetwork]
+  const toContractConfig = contractConfig.contracts[toNetwork] 
+
+  if(txData.includes(fromContractConfig["orderbook"]["address"].split('x')[1].toLowerCase())){ 
+    txData = txData.replace(fromContractConfig["orderbook"]["address"].split('x')[1].toLowerCase(), toContractConfig["orderbook"]["address"].split('x')[1].toLowerCase())
+  }
+  if(txData.includes(fromNetworkProxy.split('x')[1].toLowerCase())){
+    txData = txData.replace(fromNetworkProxy.split('x')[1].toLowerCase(), toNetworkProxy.split('x')[1].toLowerCase())
+  }
+  return txData 
+}  
