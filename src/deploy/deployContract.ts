@@ -1,6 +1,5 @@
 import {ethers} from "ethers";
 import { RainContracts, getTransactionData, getTransactionDataForNetwork, RainNetworks, getTransactionDataForZeroEx } from "../../utils"; 
-import {  ChainId } from "@0x/contract-addresses";
 import contractConfig from "../../config/config.json";
 
 
