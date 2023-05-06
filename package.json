@@ -1,6 +1,6 @@
 {
   "name": "@rainprotocol/rain-cross-deploy",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Package to deploy rain-protocol contracts across chains",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
