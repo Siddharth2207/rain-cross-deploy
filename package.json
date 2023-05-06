@@ -1,5 +1,5 @@
 {
-  "name": "@rainprotocol/rain-cross-deploy",
+  "name": "rain-x-deploy",
   "version": "1.0.6",
   "description": "Package to deploy rain-protocol contracts across chains",
   "main": "dist/index.js",
@@ -7,11 +7,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsup index.ts --format cjs,esm --dts"
-  }, 
-  "bugs": {
-    "url": "https://github.com/rainprotocol/rain-cross-deploy/issues"
   },
-  "homepage": "https://github.com/rainprotocol/rain-cross-deploy",
   "author": "Siddharth2207",
   "license": "ISC",
   "devDependencies": {
