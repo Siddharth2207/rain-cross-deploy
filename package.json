@@ -1,6 +1,6 @@
 {
   "name": "rain-x-deploy",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Package to deploy rain-protocol contracts across chains",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsup index.ts --format cjs,esm --dts"
   },
-  "author": "Siddharth2207",
+  "author": "Rainprotocol",
   "license": "ISC",
   "devDependencies": {
     "@0x/contract-addresses": "^8.2.0",
