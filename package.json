@@ -1,6 +1,6 @@
 {
   "name": "rain-x-deploy",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Package to deploy rain-protocol contracts across chains",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
