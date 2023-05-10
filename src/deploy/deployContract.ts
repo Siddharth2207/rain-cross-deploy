@@ -1,32 +1,71 @@
-import {ethers} from "ethers";
-import { RainContracts, getTransactionData, getTransactionDataForNetwork, RainNetworks, getTransactionDataForZeroEx } from "../../utils"; 
-import contractConfig from "../../config/config.json";
+
+import { getTransactionData, getTransactionDataForNetwork, RainNetworks, DISpair, getProviderForNetwork, getTransactionDataForDeployer } from "../../utils"; 
 
 
-// Provider for origin network for out purposes this will be mumbai network 
-const mumbaiProvider = new ethers.providers.JsonRpcProvider('https://matic-mumbai.chainstacklabs.com') 
+
+export const getInterpreterDeployTxData = async(
+    fromNetwork: RainNetworks,
+    contractAddress : string
+) => { 
+
+    const provider = getProviderForNetwork(fromNetwork)  
+    const txData = await provider.getCode(contractAddress)  
+    return txData 
+
+} 
+
+export const getStoreDeployTxData = async(
+    fromNetwork: RainNetworks,
+    contractAddress : string
+) => { 
+
+    const provider = getProviderForNetwork(fromNetwork)  
+    const txData = await provider.getCode(contractAddress)  
+    return txData 
+
+} 
+
+export const getDeployerDeployTxData = async(
+    fromNetwork: RainNetworks,
+    fromDIS : DISpair,
+    toDIS : DISpair,
+    contractAddress : string
+) => { 
+
+    // Get transaction data for origin network
+    const txDataOriginNetwork = await getTransactionDataForDeployer(fromNetwork, contractAddress)   
+
+    // Get transaction data for target network
+    const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )   
+
+    return txDataTargetNetwork
+
+}
+
+
 
 export const getContractDeployTxData = async ( 
     fromNetwork: RainNetworks,
-    toNetwork: RainNetworks, 
-    contract: RainContracts
+    fromDIS : DISpair,
+    toDIS : DISpair,
+    contractAddress : string
 ) => {     
 
-    const txHash = contractConfig.contracts[fromNetwork][contract].transaction 
-
     // Get transaction data for origin network
-    const txDataOriginNetwork = await getTransactionData(mumbaiProvider, txHash)  
+    const txDataOriginNetwork = await getTransactionData(fromNetwork, contractAddress)   
 
     // Get transaction data for target network
-    const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromNetwork, toNetwork )   
+    const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )    
 
     return txDataTargetNetwork
 } 
 
-export const deployArbImplementation = async (
+/**
+ * @TODO : Include deploying 0x Arb contract
+ * export const deployArbImplementation = async (
     fromNetwork: RainNetworks,
     toNetwork: RainNetworks, 
-) => { 
+   ) => { 
     
     const txHash  = contractConfig.contracts[fromNetwork][RainContracts.ZeroEx].transaction 
 
@@ -38,5 +77,14 @@ export const deployArbImplementation = async (
     
     return txDataTargetNetwork
 
+     } 
+ * 
+ * 
+ * */
 
+async function test(){
+    let res = await getStoreDeployTxData(RainNetworks.Mumbai,"0x1737406dbd51ce71f53328252e45985fdaf9df86") 
+    console.log(res)
 }
+
+test()
