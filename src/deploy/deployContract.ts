@@ -81,10 +81,3 @@ export const getContractDeployTxData = async (
  * 
  * 
  * */
-
-async function test(){
-    let res = await getStoreDeployTxData(RainNetworks.Mumbai,"0x1737406dbd51ce71f53328252e45985fdaf9df86") 
-    console.log(res)
-}
-
-test()
