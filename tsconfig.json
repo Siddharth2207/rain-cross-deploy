@@ -1,23 +1,11 @@
 {
-    "include": ["./src", "./utils/*.ts" , "./utils/Environment/*.ts" , "./utils/Transaction/*.ts" ,"./utils/Types/*.ts"],
-    "exclude": ["node_modules/*"],
-    "compilerOptions": {
-      "allowSyntheticDefaultImports": true,
-        "declaration": true,
-        "esModuleInterop": true,
-        "jsx": "react",
-        "lib": ["es5", "es2015", "es2016", "dom", "esnext"],
-        "types": ["node"],
-        "module": "es2015",
-        "moduleResolution": "node",
-        "noImplicitAny": true,
-        "noUnusedLocals": true,
-        "outDir": "dist/esm",
-        "sourceMap": true,
-        "strict": true,
-        "target": "es6",
-        "resolveJsonModule": true,
-    },
-    "files": ["dist"]
+  "include": ["./src", "./utils/*.ts" , "./utils/Environment/*.ts" , "./utils/Transaction/*.ts" ,"./utils/Types/*.ts"],
+  "exclude": ["node_modules/*"],
+  "compilerOptions": {
+    "target": "ES2020",
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+  },
+  "files": ["hardhat.config.ts"]
 }
-  
