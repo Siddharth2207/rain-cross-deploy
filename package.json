@@ -1,6 +1,6 @@
 {
   "name": "rain-x-deploy",
-  "version": "1.0.18",
+  "version": "1.0.19",
   "description": "Package to deploy rain-protocol contracts across chains",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -11,8 +11,7 @@
   "author": "Rainprotocol",
   "license": "ISC",
   "devDependencies": {
-    "@0x/contract-addresses": "^8.2.0", 
-    "axios": "^1.3.4",
+    "@0x/contract-addresses": "^8.2.0",
     "ethers": "=5.7.2",
     "typescript": "^4.9.5"
   },
