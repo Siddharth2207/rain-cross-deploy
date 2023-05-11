@@ -6,15 +6,6 @@ export type DISpair = {
     deployer : PromiseOrValue<string>;
 }  
 
-
-export enum RainContracts{ 
-    Rainterpreter = 'interpreter',
-    RainterpreterStore = 'store',
-    RainterpreterExpressionDeployer = 'expressionDeployer',
-    OrderBook = 'orderbook' ,
-    ZeroEx = 'zeroexorderbookimplmentation'
-}  
-
 export enum RainNetworks{
     Mumbai = 'mumbai' ,
     Polygon = 'polygon',
