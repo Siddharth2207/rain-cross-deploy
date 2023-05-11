@@ -1,11 +1,11 @@
 {
-  "include": ["./src", "./utils"],
-  "exclude": ["node_modules/*"],
-  "compilerOptions": {
-    "target": "ES2020",
-    "esModuleInterop": true,
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-  },
-  "files": ["hardhat.config.ts"]
+    "include": ["./src", "./utils/*.ts" , "./utils/Environment/*.ts" , "./utils/Transaction/*.ts" ,"./utils/Types/*.ts"],
+    "exclude": ["node_modules/*"],
+    "compilerOptions": {
+      "target": "ES2020",
+      "esModuleInterop": true,
+      "moduleResolution": "node",
+      "module": "CommonJS"
+    }
 }
+  
