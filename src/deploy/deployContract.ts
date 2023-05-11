@@ -1,5 +1,6 @@
 
 import {  RainNetworks, DISpair, getProviderForNetwork } from "../../utils"; 
+import { getTransactionData, getTransactionDataForDeployer, getTransactionDataForNetwork } from "../../utils/Transaction/transaction";
 
 
 
@@ -14,51 +15,51 @@ export const getInterpreterDeployTxData = async(
 
 } 
 
-// export const getStoreDeployTxData = async(
-//     fromNetwork: RainNetworks,
-//     contractAddress : string
-// ) => { 
+export const getStoreDeployTxData = async(
+    fromNetwork: RainNetworks,
+    contractAddress : string
+) => { 
 
-//     const provider = getProviderForNetwork(fromNetwork)  
-//     const txData = await provider.getCode(contractAddress)  
-//     return txData 
+    const provider = getProviderForNetwork(fromNetwork)  
+    const txData = await provider.getCode(contractAddress)  
+    return txData 
 
-// } 
+} 
 
-// export const getDeployerDeployTxData = async(
-//     fromNetwork: RainNetworks,
-//     fromDIS : DISpair,
-//     toDIS : DISpair,
-//     contractAddress : string
-// ) => { 
+export const getDeployerDeployTxData = async(
+    fromNetwork: RainNetworks,
+    fromDIS : DISpair,
+    toDIS : DISpair,
+    contractAddress : string
+) => { 
 
-//     // Get transaction data for origin network
-//     const txDataOriginNetwork = await getTransactionDataForDeployer(fromNetwork, contractAddress)   
+    // Get transaction data for origin network
+    const txDataOriginNetwork = await getTransactionDataForDeployer(fromNetwork, contractAddress)   
 
-//     // Get transaction data for target network
-//     const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )   
+    // Get transaction data for target network
+    const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )   
 
-//     return txDataTargetNetwork
+    return txDataTargetNetwork
 
-// }
+}
 
 
 
-// export const getContractDeployTxData = async ( 
-//     fromNetwork: RainNetworks,
-//     fromDIS : DISpair,
-//     toDIS : DISpair,
-//     contractAddress : string
-// ) => {     
+export const getContractDeployTxData = async ( 
+    fromNetwork: RainNetworks,
+    fromDIS : DISpair,
+    toDIS : DISpair,
+    contractAddress : string
+) => {     
 
-//     // Get transaction data for origin network
-//     const txDataOriginNetwork = await getTransactionData(fromNetwork, contractAddress)   
+    // Get transaction data for origin network
+    const txDataOriginNetwork = await getTransactionData(fromNetwork, contractAddress)   
 
-//     // Get transaction data for target network
-//     const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )    
+    // Get transaction data for target network
+    const txDataTargetNetwork = getTransactionDataForNetwork(txDataOriginNetwork, fromDIS, toDIS )    
 
-//     return txDataTargetNetwork
-// } 
+    return txDataTargetNetwork
+} 
 
 /**
  * @TODO : Include deploying 0x Arb contract
