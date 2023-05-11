@@ -1,5 +1,5 @@
 {
-  "include": ["./src", "./utils/*.ts" , "./utils/Environment/*.ts" , "./utils/Transaction/*.ts" ,"./utils/Types/*.ts"],
+  "include": ["./src", "./utils"],
   "exclude": ["node_modules/*"],
   "compilerOptions": {
     "target": "ES2020",
