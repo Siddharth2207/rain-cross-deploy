@@ -17,7 +17,10 @@ import {getContractDeployTxData, DISpair, RainNetworks } from "rain-x-deploy"
 
 ### Get Transaction Data for Contract Deployment
 You can then encode this data inside a transaction object and submit the transaction .
-If you intend to use it with frontend library like `React` or `Svelte` . 
+If you intend to use it with frontend library like `React` or `Svelte` : 
+
+#### Deploy Rain Contracts :
+To deploy rain contracts use `getContractDeployTxData` : 
 ```sh
 import {getContractDeployTxData, DISpair, RainNetworks } from "rain-x-deploy"  
 import { ethers } from "ethers"; 
@@ -76,6 +79,30 @@ const DISpair = {
     "0xce0a4f3e60178668c89f86d918a0585ca80e0f6d" //Origin contract address to x-deploy
   )
 ```
+#### Deploy RainterpreterExpressionDeployer 
+To deploy `RainterpreterExpressionDeployer` use `getDeployerDeployTxData` :
+
+```sh
+const fromDIS = {
+      interpreter:'0x24035b15e908551a2e1b4f435384d9485766d296',
+      store:'0xd28543743f017045c9448ec6d82f5568a0f26918',
+      deployer:'' // Empty string for deployer
+   }   
+
+const toDIS = {
+    interpreter : '0xeBEA638926F7BA49c0a1808e0Ff3B6d78789b153' ,
+    store : '0xB92fd23b5a9CBE5047257a0300d161D449296C03' , 
+    deployer : '' // Empty string for deployer
+   }
+
+const txData = await getDeployerDeployTxData(
+    RainNetworks.Mumbai, // Originating network
+    fromDIS, // Originating network DIS
+    toDIS, // Target network DIS
+    "0x32ba42606ca2a2b91f28ebb0472a683b346e7cc7" // Deployer address from originating network
+  ) 
+```
+
 
 
 #### Supported Networks 
