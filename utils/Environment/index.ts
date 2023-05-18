@@ -38,4 +38,17 @@ export const getProviderForNetwork = (
         provider = ethereumProvider
     }
     return provider
-} 
+}  
+
+export const getRainNetworkForChainId = (
+    chainId : number
+): RainNetworks => {
+    if(chainId === 1) {
+        return RainNetworks.Ethereum
+    }else if(chainId === 137){
+        return RainNetworks.Polygon
+    }else if(chainId === 80001){
+        return RainNetworks.Mumbai
+    }
+    return null
+}

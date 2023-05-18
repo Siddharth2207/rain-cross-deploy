@@ -115,5 +115,12 @@ export enum RainNetworks{
 } 
 ```
 
+Get network for chain Id . 
+
+```
+const fromNetwork = getRainNetworkForChainId(80001) // For Mumbai 
+const toNetwork = getRainNetworkForChainId(137) // For Polygon 
+```
+
 
 
