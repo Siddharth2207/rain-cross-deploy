@@ -1,12 +1,18 @@
 {
-    "include": ["./src", "./utils/*.ts" , "./utils/Environment/*.ts" , "./utils/Transaction/*.ts" ,"./utils/Types/*.ts"],
-    "exclude": ["node_modules/*"],
-    "compilerOptions": {
-      "target": "ES2020",            // Compatible with older browsers
-      "module": "umd",            // Compatible with both Node.js and browser
-      "moduleResolution": "node", // Tell tsc to look in node_modules for modules
-      "sourceMap": true,          // Whether to create *.js.map files
-      "esModuleInterop": true
-    }
+  "include": [
+    "./src",
+    "./utils/*.ts",
+    "./utils/Environment/*.ts",
+    "./utils/Transaction/*.ts",
+    "./utils/Types/*.ts"
+  ],
+  "exclude": ["node_modules/*"],
+  "compilerOptions": {
+    "target": "ES2020", // Compatible with older browsers
+    "module": "umd", // Compatible with both Node.js and browser
+    "moduleResolution": "node", // Tell tsc to look in node_modules for modules
+    "sourceMap": true, // Whether to create *.js.map files
+    "esModuleInterop": true,
+    "strictNullChecks": true
+  }
 }
-  
