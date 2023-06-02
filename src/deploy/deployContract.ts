@@ -2,10 +2,11 @@ import {
   RainNetworks,
   DISpair,
   NetworkProvider,
-  getTransactionDataForDeployer_SG,
-  getTransactionDataForNetwork,
-  getTransactionData_SG,
-  getTransactionData,
+  replaceDISpairInstanceTxData,
+  getDeployTransactionHashFromAPI,
+  getDeployTransactionHashFromSubgraph,
+  getDeployTransactionHash,
+  getTransactionFromTxHash,
 } from "../../utils";
 
 export const getDeployerDeployTxData = async (
@@ -15,7 +16,7 @@ export const getDeployerDeployTxData = async (
   contractAddress: string
 ): Promise<string | null> => {
   // Get transaction data for origin network
-  const txDataOriginNetwork = await getTransactionDataForDeployer_SG(
+  const txDataOriginNetwork = await getDeployTransactionHashFromSubgraph(
     fromNetwork,
     contractAddress
   );
@@ -23,7 +24,7 @@ export const getDeployerDeployTxData = async (
   if (!txDataOriginNetwork) return null;
 
   // Get transaction data for target network
-  const txDataTargetNetwork = getTransactionDataForNetwork(
+  const txDataTargetNetwork = replaceDISpairInstanceTxData(
     txDataOriginNetwork,
     fromDIS,
     toDIS
@@ -39,7 +40,7 @@ export const getContractDeployTxData = async (
   contractAddress: string
 ): Promise<string | null> => {
   // Get transaction data for origin network
-  const txDataOriginNetwork = await getTransactionData_SG(
+  const txDataOriginNetwork = await getDeployTransactionHashFromSubgraph(
     fromNetwork,
     contractAddress
   );
@@ -47,7 +48,7 @@ export const getContractDeployTxData = async (
   if (!txDataOriginNetwork) return null;
 
   // Get transaction data for target network
-  const txDataTargetNetwork = getTransactionDataForNetwork(
+  const txDataTargetNetwork = replaceDISpairInstanceTxData(
     txDataOriginNetwork,
     fromDIS,
     toDIS
@@ -56,35 +57,99 @@ export const getContractDeployTxData = async (
   return txDataTargetNetwork;
 };
 
+/**
+ * Function that  try to be agnostic to the type of contract, and try to generate the
+ * tx data from many sources, using and following the next priorities.
+ * - Subgraphs
+ * - Block scanner APIs
+ *
+ * @dev It is necessary to have in mind that in some cases this will not generate
+ * any or unknown/wrong result when consuming the function and not having idea
+ * what kind of contract is. Some scenearios and their possibles outputs:
+ *
+ * - It's a rain contract using DISpair instances on the supported chains, it will
+ * generate the correct transaction data.
+ * - It's a rain contract that is not using DISpair instances and it have not
+ * a constructor, it will generate the correct transaction data (using provider),
+ * - It's a rain contract that have a constructor that is not chain dependent, it
+ * will generate the correct transaction data (since not modify the tx data)
+ *
+ * @param fromNetwork_
+ * @param contractAddress_
+ * @param DIS
+ * @returns
+ */
 export const getDeployTxData = async (
-  fromNetwork: RainNetworks,
-  contractAddress: string,
-  DIS?: {
-    from: DISpair;
-    to: DISpair;
-  }
+  fromNetwork_: RainNetworks,
+  contractAddress_: string,
+  options_: {
+    txHash?: string;
+    DIS?: {
+      from: DISpair;
+      to: DISpair;
+    };
+  } = {}
 ) => {
-  // Get transaction data for origin network
-  const txDataOriginNetwork = await getTransactionData(
-    fromNetwork,
-    contractAddress
-  );
+  const { txHash: txHashOption, DIS } = options_;
+  let txDataOriginNetwork: string | null = null;
 
-  // Transaction data was not possible to found
-  if (!txDataOriginNetwork) return null;
+  if (txHashOption) {
+    // Use the tx hash provided and check if the contract address of the receipt
+    // match with the address provided.
+
+    const txResp = await getTransactionFromTxHash(txHashOption, fromNetwork_);
+    if (!txResp) throw new Error("It cannot get transaction information");
+
+    const txReceipt = await txResp.wait();
+    if (
+      txReceipt.contractAddress.toLowerCase() != contractAddress_.toLowerCase()
+    ) {
+      throw new Error(
+        "The transaction hash provided does not match with the contract address"
+      );
+    }
+
+    txDataOriginNetwork = txResp.data;
+  }
+
+  // If the `txHashOption` was not provided, the `txDataOriginNetwork` still null,
+  // so means that the code need to check on the tooling.
+  // Otherwise, if the `txHashOption` was provided, the `txDataOriginNetwork`
+  // should be fileld or an error happened. But this will wokr as double check here.
+  if (!txDataOriginNetwork) {
+    // Search on the tooling
+    const txHashTooling = await getDeployTransactionHash(
+      fromNetwork_,
+      contractAddress_
+    );
+
+    // If nothing found here, then means that the deploy transaction hash
+    // need to be provided since the tooling cannot obtained it.
+    if (!txHashTooling) return null;
+
+    const txResp = await getTransactionFromTxHash(txHashTooling, fromNetwork_);
+
+    // It cannot obtain the transaction, but could means that tx hash is wrong
+    // or the `fromNetwork_` or the  `contractAddress_`. In that case is up to
+    // the consumer, but the code should not error there.
+    if (!txResp) return null;
+
+    txDataOriginNetwork = txResp.data;
+  }
 
   // It's a contract that have DISpair instances. This means that could be a
   // regular contract or an expression deployer with just interpreter and store
   // instances.
   if (DIS) {
+    // Check if both deployer (from and to) are present OR if both are missing
     if (
       (DIS.from.deployer && DIS.to.deployer) ||
       (!DIS.from.deployer && !DIS.to.deployer)
     ) {
       // If in "from" and "to" the deployer is provided, then It's a regular contract
       // If in "from" and "to" the deployer is missing, then It's a deployer
-      // Both cases could be handled here.
-      const txDataTargetNetwork = getTransactionDataForNetwork(
+      // Both cases should be handled here.
+      const txDataTargetNetwork = replaceDISpairInstanceTxData(
         txDataOriginNetwork,
         DIS.from,
         DIS.to
@@ -94,6 +159,7 @@ export const getDeployTxData = async (
     } else {
       // A deloyer instances was provided on "from" or "to" without his counterpart.
       // It's not possible to determine if it's a deployer or not.
+      // An data is missing or extra
       throw new Error(
         'A deloyer instances was provided on "from" or "to" DISpair instance without his counterpart'
       );
@@ -101,8 +167,9 @@ export const getDeployTxData = async (
   } else {
     // It is another type of contract, like Interpreter, Store, CloneFactory, or
     // Or other contract with no DIS intances. Also, possibly this could handle
-    // the deployment of "non-rain contracts". Similarly, it is no guarantee that
-    // it can always do so, since its arguments will be unknown in the tx hash.
+    // the deployment of "non-rain contracts", but the code does not ensure the
+    // success of that. Similarly, it is no guarantee that it can always do so,
+    // since its arguments will be unknown in the tx hash.
 
     // Since some DISpair instance will no be change, return the same  origin
     // transaction data wihtout changes

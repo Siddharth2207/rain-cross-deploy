@@ -43,7 +43,7 @@ export class NetworkProvider {
   }
   static Mumbai(): ethers.providers.JsonRpcProvider {
     return new ethers.providers.JsonRpcProvider(
-      "https://matic-mumbai.chainstacklabs.com"
+      "https://polygon-mumbai.g.alchemy.com/v2/yAwbpk-0UDo-G398kyr6iKrUVWL5fyVj"
     );
   }
 

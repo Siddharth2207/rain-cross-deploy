@@ -24,7 +24,7 @@ If you intend to use it with frontend library like `React` or `Svelte`
 
 ### Deploy Rain Contracts
 
-To deploy rain contracts use `getContractDeployTxData` :
+To deploy rain contracts use `getDeployTxData` :
 
 ```ts
 import { getDeployTxData, RainNetworks, type DISpair } from "rain-x-deploy"
@@ -53,20 +53,22 @@ const deployContract = async () => {
     deployer : '0x34a81e8bc3e2420efc8ae84d35045c0326b00bdc'
   } 
 
-     // Get contract deployment tx data for target network
-     const txData = await getDeployTxData(
-        RainNetworks.Mumbai, // originating network
-        "0xacf6069f4a6a9c66db8b9a087592278bbccde5c3", //Origin contract address to x-deploy
-        DIS: {
-          from: fromDIS,
-          to: toDIS,
-        }
-      )
+  // Get contract deployment tx data for target network
+  const txData = await getDeployTxData(
+    RainNetworks.Mumbai, // originating network
+    "0xacf6069f4a6a9c66db8b9a087592278bbccde5c3", //Origin contract address to x-deploy
+    {
+      DIS: { // The DISpair instances provided as options
+        from: fromDIS,
+        to: toDIS,
+      }
+    }
+  )
     
-    // Submit the transaction
-    await signer.sendTransaction({
-      data :txData
-    })
+  // Submit the transaction
+  await signer.sendTransaction({
+    data :txData
+  })
 }
 ```
 
@@ -82,19 +84,21 @@ const DISpair = {
 } 
 
 // Pass the same DIS as origin and target to clone the contract.
- const txData = await getDeployTxData(
-    RainNetworks.Ethereum, // originating network
-    "0xce0a4f3e60178668c89f86d918a0585ca80e0f6d", //Origin contract address to x-deploy
+const txData = await getDeployTxData(
+  RainNetworks.Ethereum, // originating network
+  "0xce0a4f3e60178668c89f86d918a0585ca80e0f6d", //Origin contract address to x-deploy
+  {
     DIS: {
       from: DISpair,
       to: DISpair,
-    } 
-  )
+    }
+  }
+)
 ```
 
 #### Deploy RainterpreterExpressionDeployer
 
-To deploy `RainterpreterExpressionDeployer`, now it is possible to use the same `getDeployTxData` function, using DISpair objects but without providing the deployer field.
+To deploy `RainterpreterExpressionDeployer`, now it is possible to use the same `getDeployTxData` function, using DISpair objects but without providing the `deployer` field.
 
 ```ts
 const fromDIS = {
@@ -103,16 +107,38 @@ const fromDIS = {
 }   
 
 const toDIS = {
-    interpreter : '0xeBEA638926F7BA49c0a1808e0Ff3B6d78789b153' ,
-    store : '0xB92fd23b5a9CBE5047257a0300d161D449296C03'
-   }
+  interpreter : '0xeBEA638926F7BA49c0a1808e0Ff3B6d78789b153' ,
+  store : '0xB92fd23b5a9CBE5047257a0300d161D449296C03'
+}
 
-const txData = await getDeployerDeployTxData(
-    RainNetworks.Mumbai, // Originating network
-    fromDIS, // Originating network DIS
-    toDIS, // Target network DIS
-    "0x32ba42606ca2a2b91f28ebb0472a683b346e7cc7" // Deployer address from originating network
-  ) 
+const txData = await getDeployTxData(
+  RainNetworks.Mumbai, // Originating network
+  "0x32ba42606ca2a2b91f28ebb0472a683b346e7cc7", // Deployer address from originating network
+  {
+    DIS: {
+      from: fromDIS, // Originating network DIS
+      to: toDIS, // Target network DIS
+    }
+  }
+) 
+```
+
+#### Provide transaction hash
+
+If have doubts about if the package can obtain the transaction data of an address, there is a exposed function called `checkObtainTxHash` that check it. Generally it will work to inform a consumer about it and request for the transaction hash manually. Then, you can pass the transaction hash as an option when calling `getDeployTxData`.
+
+```ts
+const network = RainNetworks.Mumbai;
+const contractAddress = '0x9278fe76aac69745a6af85ac6d1c456a2921fdf5';
+
+const checkTxHash = await checkObtainTxHash(network, contractAddress); // false
+
+const txHashProivded = '0x2cdef2c3521553e677b49916bfc6427387a97bb21a5781a212059ffd4df89fe9';
+
+const txData = await getDeployTxData(network, contractAddress, {
+  txHash: txHashProivded
+})
+
 ```
 
 ### Supported Networks
@@ -136,6 +162,20 @@ const networkA = getRainNetworkForChainId(1) // For Ethereum
 const networkB = getRainNetworkForChainId(137) // For Polygon 
 const networkC = getRainNetworkForChainId(80001) // For Mumbai 
 ```
+
+## Scenarios when consuming
+
+Please keep in mind that in certain cases, using this function without understanding the type of contract may not yield any result or may produce incorrect or unknown outcomes. Let's explore some scenarios and their possible outputs:
+
+- If it's a rain contract using DISpair instances on the supported chains, it will generate the correct transaction data.
+- If it's a rain contract that does not use DISpair instances and lacks a constructor, it will still generate the correct transaction data by utilizing the provider.
+- If it's a rain contract with a constructor that is not chain-dependent, it will generate the correct transaction data without modifying the transaction data.
+
+Please note that understanding the contract type is crucial to ensure accurate and expected results when consuming this function.
+
+## Limitations
+
+As mentioned previously some scenearios, also is worth to mention the limitations of the package that maybe serve to the consumer as basic understanding about the previous scenarios and potentially other news. The rain tooling used on the package mainly track the rain contracts that use DISpair instances and ExpressionDeployers on their networks. The deploy transaction hash is possible to obtain. With that said, there are other rain contracts that don't use DISpair instances, which means that they are not present on the Rain subgraphs. On those cases, the package will try to obtain their deploy transaction by using other methods, like the BlockScanner APIs (etherscan, polygonscan, etc). Sadly, even these APIS have their limitations on test networks (like sepolia or mumbai), that does not support the endpoints to return the required deploy transacton. This is the reason why the package allow to provide the `txHash` as option, so the code could retrieve the transaction and check that match with the address.
 
 ## Ask for network support
 

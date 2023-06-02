@@ -1,7 +1,4 @@
-import {
-  ChainId,
-  getContractAddressesForChainOrThrow,
-} from "@0x/contract-addresses";
+import { ethers } from "ethers";
 import {
   BlockScannerAPI,
   DISpair,
@@ -11,137 +8,131 @@ import {
 } from "..";
 import axios from "axios";
 
-/*
- * Get transaction data (bytecode + args) using the Block scanner APIs
+// import {
+//   ChainId,
+//   getContractAddressesForChainOrThrow,
+// } from "@0x/contract-addresses";
+
+/**
+ * Allow to check if it is possible to obtain the deploy transaction using the
+ * `getDeployTxData` present on the package. This is useful to inform and request
+ * a transaction hash in the option as a input when calling `getDeployTxData`.
  */
-export const getTransactionData = async (
+export const checkObtainTxHash = async (
+  fromNetwork_: RainNetworks,
+  contractAddress_: string
+): Promise<boolean> => {
+  return (await getDeployTransactionHash(fromNetwork_, contractAddress_))
+    ? true
+    : false;
+};
+
+export const getDeployTransactionHash = async (
+  fromNetwork_: RainNetworks,
+  contractAddress_: string
+): Promise<string | null> => {
+  // Priority on the subgraph, since it is rain tooling and avoid to use
+  // the API keys.
+  let txHashOriginNetwork = await getDeployTransactionHashFromSubgraph(
+    fromNetwork_,
+    contractAddress_
+  );
+
+  // If the subgraph does not have info of the tx hash, then use the block
+  // scanner API
+  if (!txHashOriginNetwork) {
+    txHashOriginNetwork = await getDeployTransactionHashFromAPI(
+      fromNetwork_,
+      contractAddress_
+    );
+  }
+
+  return txHashOriginNetwork;
+};
+
+export const getTransactionFromTxHash = async (
+  txHash_: string,
+  fromNetwork_: RainNetworks
+): Promise<ethers.providers.TransactionResponse | null> => {
+  const provider = NetworkProvider.get(fromNetwork_);
+  if (!provider)
+    throw new Error(`No RPC Provider for this network: ${fromNetwork_}`);
+
+  const transaction = await provider.getTransaction(txHash_);
+
+  return transaction ?? null;
+};
+
+/*
+ * Get transaction data (bytecode + args) using the Block scanner APIs.
+ * Some block scanners, mainly of the testnets, does not support this
+ */
+export const getDeployTransactionHashFromAPI = async (
   fromNetwork: RainNetworks,
   contractAddress: string
 ): Promise<string | null> => {
-  const provider = NetworkProvider.get(fromNetwork);
-
-  if (!provider) {
-    throw new Error(`No RPC Provider for this network: ${fromNetwork}`);
-  }
-
   const url = BlockScannerAPI.getCreationHashURL(fromNetwork, contractAddress);
   const resultApi = await axios.get(url);
 
   if (resultApi.status == 200 && resultApi.data.status == "1") {
-    const transaction = await provider.getTransaction(
-      resultApi.data.result[0].txHash
-    );
-
-    return transaction.data;
+    return resultApi.data.result[0].txHash;
   }
 
   return null;
 };
 
-/*
- * Get transaction data (bytecode + args) using the Subgraph.
- *
- * It have in mind the limitations of this way since will only work for contracts
- * and NOT for deployers.
- *
- * @TODO: Remove
- */
-export const getTransactionData_SG = async (
+export const getDeployTransactionHashFromSubgraph = async (
   fromNetwork: RainNetworks,
   contractAddress: string
-) => {
+): Promise<string | null> => {
   const registry = RegistrySubgraph.get(fromNetwork);
 
-  const provider = NetworkProvider.get(fromNetwork);
-
-  if (!registry) {
+  if (!registry)
     throw new Error(`No Registry Subgraph for this network: ${fromNetwork}`);
-  }
 
-  if (!provider) {
-    throw new Error(`No RPC Provider for this network: ${fromNetwork}`);
-  }
+  const query = `{
+    contract(id: "${contractAddress.toLowerCase()}") {
+      deployTransaction {
+        id
+      }
+    }
+    expressionDeployer(id: "${contractAddress.toLowerCase()}") {
+      deployTransaction {
+        id
+      }
+    }
+  }`;
 
-  const result = await axios.post(
+  const { status, data } = await axios.post(
     registry,
     {
-      query: `
-          {
-            contracts(where: {id: "${contractAddress.toLowerCase()}"}) {
-              deployTransaction {
-                id
-              }
-            }
-          }
-          `,
+      query,
     },
     { headers: { "Content-Type": "application/json" } }
   );
 
-  if (result) {
-    const transaction = await provider.getTransaction(
-      result.data.data.contracts[0].deployTransaction.id
-    );
+  // If response status is code 200, the response was obtained correctly.
+  // But anyway this do not guarantee that the response will have a data.
+  // So, the code should check which response have the data
+  if (status == 200) {
+    const {
+      data: { contract, expressionDeployer },
+    } = data;
 
-    return transaction.data;
-  }
+    if (contract && contract.deployTransaction?.id)
+      return contract.deployTransaction?.id;
 
-  return null;
-};
-
-/*
- * Get transaction data (bytecode + args) using the Subgraph. I
- *
- * It have in mind the limitations of this way since will only work for deployers
- * and NOT for "regular" contracts.
- *
- * @TODO: Remove
- */
-export const getTransactionDataForDeployer_SG = async (
-  fromNetwork: RainNetworks,
-  contractAddress: string
-) => {
-  const registry = RegistrySubgraph.get(fromNetwork);
-  const provider = NetworkProvider.get(fromNetwork);
-
-  if (!registry) {
-    throw new Error(`No Registry Subgraph for this network: ${fromNetwork}`);
-  }
-
-  if (!provider) {
-    throw new Error(`No RPC Provider for this network: ${fromNetwork}`);
-  }
-
-  const result = await axios.post(
-    registry,
-    {
-      query: `
-          {
-            expressionDeployers(where: {id: "${contractAddress.toLowerCase()}"}) {
-              deployTransaction {
-                id
-              }
-            }
-          }
-          `,
-    },
-    { headers: { "Content-Type": "application/json" } }
-  );
-
-  if (result) {
-    const transaction = await provider.getTransaction(
-      result.data.data.expressionDeployers[0].deployTransaction.id
-    );
-    return transaction.data;
+    if (expressionDeployer && expressionDeployer.deployTransaction?.id)
+      return expressionDeployer.deployTransaction?.id;
   }
 
   return null;
 };
 
 /**
- *Replace all DISpair instances
+ * Replace all DISpair instances `from` with `to` intances
  */
-export const getTransactionDataForNetwork = (
+export const replaceDISpairInstanceTxData = (
   txData: string,
   fromNetworkDIS: DISpair,
   toNetworkDIS: DISpair
