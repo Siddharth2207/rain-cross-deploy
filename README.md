@@ -137,6 +137,16 @@ const networkB = getRainNetworkForChainId(137) // For Polygon
 const networkC = getRainNetworkForChainId(80001) // For Mumbai 
 ```
 
+## Scenarios when consuming
+
+Please keep in mind that in certain cases, using this function without understanding the type of contract may not yield any result or may produce incorrect or unknown outcomes. Let's explore some scenarios and their possible outputs:
+
+- If it's a rain contract using DISpair instances on the supported chains, it will generate the correct transaction data.
+- If it's a rain contract that does not use DISpair instances and lacks a constructor, it will still generate the correct transaction data by utilizing the provider.
+- If it's a rain contract with a constructor that is not chain-dependent, it will generate the correct transaction data without modifying the transaction data.
+
+Please note that understanding the contract type is crucial to ensure accurate and expected results when consuming this function.
+
 ## Ask for network support
 
 If need other network to be supported on this package, please open a new issue
