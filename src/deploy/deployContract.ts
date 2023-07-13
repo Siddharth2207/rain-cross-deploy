@@ -12,7 +12,7 @@ export const getContractDeployTxData = async (
     toNetwork: RainNetworks, 
     contract: RainContracts
 ) => {     
-
+    //get tx hash
     const txHash = contractConfig.contracts[fromNetwork][contract].transaction 
 
     // Get transaction data for origin network

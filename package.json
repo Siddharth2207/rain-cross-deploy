@@ -1,12 +1,13 @@
 {
-  "name": "rain-x-deploy",
+  "name": "@rainprotocol/rain-x-deploy",
   "version": "1.0.0",
-  "description": "Package to deploy rain-protocol contracts across chains",
+  "description": "Package to deploy rain-protocol contracts across chains", 
+  "keywords": [],
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Siddharth2207",
+  "author": "Rain Protocol",
   "license": "ISC" ,
   "devDependencies": {
     "@0x/contract-addresses": "^8.2.0",
